@@ -28,7 +28,7 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public Item findById(Long itemId) {
-        if(itemNotExist(itemId)) {
+        if (itemNotExist(itemId)) {
             throw new ObjectNotFoundException(String.format("Товар с id = %d не найден", itemId));
         }
         log.info("Найден товар с id = {}", itemId);

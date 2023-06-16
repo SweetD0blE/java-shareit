@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.EmailAlreadyExistException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.mapper.UserMapper;
+import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
@@ -62,7 +62,7 @@ class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(Long userId) {
         if (userRepository.userNotExist(userId)) {
-            throw new ObjectNotFoundException(String.format("Пользователь с id = %id не найден", userId));
+            throw new ObjectNotFoundException(String.format("Пользователь с id = %d не найден", userId));
         }
         userRepository.delete(userId);
     }

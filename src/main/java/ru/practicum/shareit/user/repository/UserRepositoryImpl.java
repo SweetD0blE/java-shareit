@@ -33,7 +33,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public User create(User user) {
-        user.setId(id);
+        user.setId(id++);
         users.put(user.getId(), user);
         log.info("Пользователь с id = {} был создан", user.getId());
         return user;

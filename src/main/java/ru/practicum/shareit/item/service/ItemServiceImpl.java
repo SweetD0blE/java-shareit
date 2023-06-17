@@ -25,7 +25,7 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDto> getUserItems(Long userId) {
         return itemRepository.findItems()
                 .stream()
-                .filter(Item -> Item.getOwner().getId().equals(userId))
+                .filter(item -> item.getOwner().getId().equals(userId))
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }

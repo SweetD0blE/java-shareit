@@ -18,7 +18,7 @@ public class ErrorResponse {
     private int code;
     private String status;
     private String fieldName;
-    private String message;
+    private String error;
 
     public ErrorResponse() {
         timestamp = new Date();
@@ -28,7 +28,7 @@ public class ErrorResponse {
         this();
         this.code = httpStatus.value();
         this.status = httpStatus.name();
-        this.message = message;
+        this.error = message;
     }
 
     public ErrorResponse(HttpStatus httpStatus, String fieldName, String message) {
@@ -36,6 +36,6 @@ public class ErrorResponse {
         this.code = httpStatus.value();
         this.status = httpStatus.name();
         this.fieldName = fieldName;
-        this.message = message;
+        this.error = message;
     }
 }

@@ -1,6 +1,7 @@
 package ru.practicum.shareit.user.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.EmailAlreadyExistException;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -37,7 +39,9 @@ class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserDto createUser(UserDto userDto) {
-        return UserMapper.toUserDto(userRepository.save(UserMapper.toUser(userDto)));
+        User user = UserMapper.toUser(userDto);
+        user = userRepository.save(user);
+        return UserMapper.toUserDto(user);
     }
 
     @Transactional
@@ -69,7 +73,8 @@ class UserServiceImpl implements UserService {
     @Override
     public void validateUserById(Long userId) {
         if (!userRepository.existsById(userId)) {
-            throw new ObjectNotFoundException(String.format("User not found: id=%d", userId));
+            throw new ObjectNotFoundException(String.format("Пользователь с id = %d не найден", userId));
         }
     }
+
 }

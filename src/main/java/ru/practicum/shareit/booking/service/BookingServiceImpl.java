@@ -66,7 +66,7 @@ public class BookingServiceImpl implements BookingService {
                 bookings = bookingRepository.findByBookerIdAndStatus(userId, BookingStatus.REJECTED, page);
                 break;
             default:
-                throw new UnsupportedStateException(String.format("Неизвестное состояние: %s", state));
+                throw new UnsupportedStateException(String.format("Unknown state: %s", state));
         }
         return bookings.stream()
                 .map(BookingMapper::toBookingDto)
@@ -99,7 +99,7 @@ public class BookingServiceImpl implements BookingService {
                bookings = bookingRepository.findAllByItem_Owner_IdAndStatus(userId, BookingStatus.REJECTED, page);
                break;
            default:
-               throw new UnsupportedStateException(String.format("Неизвестное состояние: %s", state));
+               throw new UnsupportedStateException(String.format("Unknown state: %s", state));
        }
        return bookings.stream()
                .map(BookingMapper::toBookingDto)
@@ -125,11 +125,10 @@ public class BookingServiceImpl implements BookingService {
         Item item = itemRepository.findById(bookingCreateDto.getItemId()).orElseThrow(() ->
                 new ObjectNotFoundException(String.format("Вещи с id = %d не существует", bookingCreateDto.getItemId())));
         if (Objects.equals(item.getOwner(), user)) {
-            throw new ObjectNotFoundException(String
-                    .format("Вещь с id %d недоступна для бронирования", item.getId()));
+            throw new ObjectNotFoundException(String.format("Вещь с id = %d недоступна для бронирования", item.getId()));
         }
         if (!item.getAvailable()) {
-            throw new ValidationException(String.format("Вещь с id %d недоступна", item.getId()));
+            throw new ValidationException(String.format("Вещь с id = %d недоступна", item.getId()));
         }
         if (!dateValidator.isCorrectDate(bookingCreateDto.getStart(), bookingCreateDto.getEnd())) {
             throw new ValidationException("Неправильная дата");

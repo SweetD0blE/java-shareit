@@ -5,8 +5,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.validation.GroupValidation.Create;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.List;
 
@@ -32,7 +32,7 @@ public class UserController {
     }
 
     @PostMapping
-    public UserDto createUser(@Valid @RequestBody UserDto userDto) {
+    public UserDto createUser(@Validated(Create.class) @RequestBody UserDto userDto) {
         return userService.createUser(userDto);
     }
 

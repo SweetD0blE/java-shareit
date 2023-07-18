@@ -1,18 +1,20 @@
-package ru.practicum.shareit.request;
+package ru.practicum.shareit.request.model;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * TODO Sprint add-item-requests.
  */
 @Entity
 @Table(name = "requests")
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -23,13 +25,15 @@ public class ItemRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Column
+    @Column(nullable = false)
     String description;
 
     @ManyToOne
+    @ToString.Exclude
     @JoinColumn(name = "requestor_id", nullable = false)
-    User request;
+    User requestor;
 
-    @Column
-    LocalDate created;
+    @Column(name = "created")
+    @CreationTimestamp
+    LocalDateTime created;
 }

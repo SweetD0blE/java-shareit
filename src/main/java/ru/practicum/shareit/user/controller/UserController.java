@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.validation.GroupValidation.Create;
+import ru.practicum.shareit.validation.GroupValidation.Update;
 
 import javax.validation.constraints.Positive;
 import java.util.List;
@@ -37,7 +38,8 @@ public class UserController {
     }
 
     @PatchMapping("{id}")
-    public UserDto updateUser(@PathVariable("id") @Positive Long userId, @RequestBody UserDto userDto) {
+    public UserDto updateUser(@PathVariable("id") @Positive Long userId,
+                              @Validated(Update.class) @RequestBody UserDto userDto) {
         return userService.updateUser(userId, userDto);
     }
 

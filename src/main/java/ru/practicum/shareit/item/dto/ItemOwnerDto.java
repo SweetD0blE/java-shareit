@@ -5,7 +5,7 @@ import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.booking.dto.BookingItemDto;
 import ru.practicum.shareit.item.comment.dto.CommentDto;
 
-import java.util.Set;
+import java.util.List;
 
 @Getter
 @Setter
@@ -28,6 +28,6 @@ public class ItemOwnerDto {
 
     Long requestId;
 
-    Set<CommentDto> comments;
+    List<CommentDto> comments;
 
 }

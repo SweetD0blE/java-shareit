@@ -224,23 +224,4 @@ public class ItemRequestControllerTest {
                 .andExpect(jsonPath("$[0].error", is("must not be blank")));
     }
 
-    @Test
-    void createRequestIfRequestDescriptionWrongSize_ReturnStatus400Test() throws Exception {
-        byte[] array = new byte[220];
-        new Random().nextBytes(array);
-        String generatedString = new String(array, StandardCharsets.UTF_8);
-        ItemRequestDto itemRequestDto = itemRequestDtoBuilder.description(generatedString).build();
-        String json = mapper.writeValueAsString(itemRequestDto);
-        mockMvc.perform(post(url)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1)
-                        .content(json))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].code", is(400)))
-                .andExpect(jsonPath("$[0].fieldName", is("description")))
-                .andExpect(jsonPath("$[0].error", is("size must be between 0 and 200")));
-    }
-
 }

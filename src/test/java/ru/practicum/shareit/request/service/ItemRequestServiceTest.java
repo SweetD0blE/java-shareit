@@ -21,7 +21,7 @@ import static org.hamcrest.Matchers.*;
 @Transactional
 @SpringBootTest
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-class ItemRequestServiceTestIT {
+class ItemRequestServiceTest {
 
     private final EntityManager entityManager;
     private final ItemRequestService itemRequestService;

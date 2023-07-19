@@ -3,7 +3,6 @@ package ru.practicum.shareit.user.dto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.validation.GroupValidation.Create;
-import ru.practicum.shareit.validation.GroupValidation.Update;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;

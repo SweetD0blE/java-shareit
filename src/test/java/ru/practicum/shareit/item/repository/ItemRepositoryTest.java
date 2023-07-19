@@ -15,7 +15,8 @@ import ru.practicum.shareit.user.repository.UserRepository;
 import javax.persistence.Query;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DataJpaTest
 public class ItemRepositoryTest {

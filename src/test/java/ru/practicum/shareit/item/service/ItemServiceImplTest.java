@@ -63,7 +63,7 @@ class ItemServiceImplTest {
 
         booker = User.builder()
                 .id(2L)
-                .name("nam2")
+                .name("name2")
                 .email("mail2@mail.ru")
                 .build();
 

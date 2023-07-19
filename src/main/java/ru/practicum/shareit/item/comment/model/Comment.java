@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.comment.module;
+package ru.practicum.shareit.item.comment.model;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;

@@ -15,7 +15,7 @@ import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.comment.dto.CommentDto;
 import ru.practicum.shareit.item.comment.mapper.CommentMapper;
-import ru.practicum.shareit.item.comment.module.Comment;
+import ru.practicum.shareit.item.comment.model.Comment;
 import ru.practicum.shareit.item.comment.repository.CommentRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemOwnerDto;
@@ -25,11 +25,13 @@ import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -147,7 +149,7 @@ public class ItemServiceImpl implements ItemService {
             throw new ValidationException("Вы можете добавить комментарий только после завершения бронирования.");
         }
         if (bookings.stream().noneMatch(s -> Objects.equals(s.getBooker(), user))) {
-            throw new ValidationException("Вы можете добавить комментарий только после оформления бронирования");
+            throw new ValidationException("Вы можете добавить комментарий только после оформления бронирования.");
         }
         return CommentMapper.toCommentDto(commentRepository.save(comment));
     }

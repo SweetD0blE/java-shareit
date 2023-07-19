@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 
-public class ItemRequestServiceImpI implements ItemRequestService {
+public class ItemRequestServiceImpl implements ItemRequestService {
 
     private final UserService userService;
     private final ItemRequestRepository itemRequestRepository;

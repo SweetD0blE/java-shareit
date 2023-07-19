@@ -8,9 +8,9 @@ public interface ItemRequestService {
 
     List<ItemRequestDto> getAllRequestsWithOffers(Long userId);
 
-    ItemRequestDto getRequestWithOffersById(Long userId, Long requestId);
-
     List<ItemRequestDto> getRequests(Long userId, Integer from, Integer size);
+
+    ItemRequestDto getRequestWithOffersById(Long userId, Long requestId);
 
     ItemRequestDto saveRequest(Long userId, ItemRequestDto itemRequestDto);
 }

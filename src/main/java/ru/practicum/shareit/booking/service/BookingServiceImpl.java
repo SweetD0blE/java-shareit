@@ -17,9 +17,8 @@ import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.exception.UnsupportedStateException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.service.UserService;
 import ru.practicum.shareit.validation.DateValidator;
 
@@ -35,8 +34,7 @@ import java.util.stream.Collectors;
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
-    private final ItemRepository itemRepository;
-    private final UserRepository userRepository;
+    private final ItemService itemService;
     private final UserService userService;
     private final DateValidator dateValidator;
 
@@ -120,10 +118,8 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     @Override
     public BookingDto createBooking(Long userId, BookingCreateDto bookingCreateDto) {
-        User user = userRepository.findById(userId).orElseThrow(() ->
-                new ObjectNotFoundException(String.format("Пользователя с id = %d не существует", userId)));
-        Item item = itemRepository.findById(bookingCreateDto.getItemId()).orElseThrow(() ->
-                new ObjectNotFoundException(String.format("Вещи с id = %d не существует", bookingCreateDto.getItemId())));
+        User user = userService.getById(userId);
+        Item item = itemService.getById(bookingCreateDto.getItemId());
         if (Objects.equals(item.getOwner(), user)) {
             throw new ObjectNotFoundException(String.format("Вещь с id = %d недоступна для бронирования", item.getId()));
         }
@@ -144,8 +140,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto approveBooking(Long userId, Long bookingId, Boolean approve) {
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() ->
                 new ObjectNotFoundException(String.format("Бронирование с id = %d не найдено", bookingId)));
-        User user = userRepository.findById(userId).orElseThrow(() ->
-                new ObjectNotFoundException(String.format("Пользователя с id = %d не существует", userId)));
+        User user = userService.getById(userId);
         if (!Objects.equals(booking.getItem().getOwner(), user)) {
             throw new ObjectNotFoundException("Вы не владеете этой вещью");
         }

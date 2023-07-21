@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.comment.module;
+package ru.practicum.shareit.item.comment.model;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -11,7 +11,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "comments")
-@Data
+@Getter
+@Setter
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

@@ -13,22 +13,25 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
-import ru.practicum.shareit.item.comment.dto.CommentCreateDto;
 import ru.practicum.shareit.item.comment.dto.CommentDto;
 import ru.practicum.shareit.item.comment.mapper.CommentMapper;
-import ru.practicum.shareit.item.comment.module.Comment;
+import ru.practicum.shareit.item.comment.model.Comment;
 import ru.practicum.shareit.item.comment.repository.CommentRepository;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemOwnerDto;
 import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.request.model.ItemRequest;
+import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.repository.UserRepository;
 import ru.practicum.shareit.user.service.UserService;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,7 +43,7 @@ public class ItemServiceImpl implements ItemService {
     private final CommentRepository commentRepository;
     private final UserService userService;
     private final ItemRepository itemRepository;
-    private final UserRepository userRepository;
+    private final ItemRequestRepository itemRequestRepository;
 
     @Override
     public List<ItemOwnerDto> getAllItemsByUserId(Long userId, Integer from, Integer size) {
@@ -51,6 +54,13 @@ public class ItemServiceImpl implements ItemService {
                 .map(ItemMapper::toItemOwnerDto)
                 .collect(Collectors.toList());
         List<Booking> bookings = bookingRepository.findBookingsByItemIn(items);
+        List<Comment> comments = commentRepository.findCommentsByItemIn(items);
+        if (comments != null && !comments.isEmpty()) {
+            for (ItemOwnerDto i : itemsOwnerDto) {
+                i.setComments(comments.stream().filter(c -> Objects.equals(c.getItem().getId(), i.getId()))
+                        .map(CommentMapper::toCommentDto).collect(Collectors.toList()));
+            }
+        }
         if (bookings != null && !bookings.isEmpty()) {
             for (ItemOwnerDto i : itemsOwnerDto) {
                 List<Booking> bookingsOwnerItems = bookings.stream()
@@ -65,13 +75,12 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemOwnerDto getItemById(Long userId, Long itemId) {
         userService.validateUserById(userId);
-        Item item = itemRepository.findById(itemId).orElseThrow(() ->
-                new ObjectNotFoundException(String.format("Вещь с id = %d не найдена", itemId)));
+        Item item = getById(itemId);
         ItemOwnerDto itemOwnerDto = ItemMapper.toItemOwnerDto(item);
-        Set<Comment> comments = commentRepository.findCommentsByItem_Id(itemId);
+        List<Comment> comments = commentRepository.findCommentsByItem_Id(itemId);
         itemOwnerDto.setComments(comments.stream()
                 .map(CommentMapper::toCommentDto)
-                .collect(Collectors.toSet()));
+                .collect(Collectors.toList()));
         List<Booking> bookings = bookingRepository.findBookingsByItem_Id(itemOwnerDto.getId());
         if (bookings != null && !bookings.isEmpty() && Objects.equals(item.getOwner().getId(), userId)) {
             addLastAndNextBookings(itemOwnerDto, bookings);
@@ -94,24 +103,27 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     @Override
     public ItemDto createItem(Long userId, ItemDto itemDto) {
-       User user = userRepository.findById(userId).orElseThrow(() ->
-               new ObjectNotFoundException(String.format("Пользователь с id = %d не найден", userId)));
-       return ItemMapper.toItemDto(itemRepository.save(ItemMapper.toCreateItem(itemDto, user)));
+        User user = userService.getById(userId);
+        ItemRequest itemRequest = null;
+        if (itemDto.getRequestId() != null) {
+            itemRequest = itemRequestRepository.findById(itemDto.getRequestId()).orElseThrow(() ->
+                    new ObjectNotFoundException(String.format("Запрос с id = %d не был найден", itemDto.getRequestId())));
+        }
+        return ItemMapper.toItemDto(itemRepository.save(ItemMapper.toItem(itemDto, user, itemRequest)));
     }
 
     @Transactional
     @Override
     public ItemDto updateItem(Long userId, Long itemId, ItemDto itemDto) {
-        User user = userRepository.findById(userId).orElseThrow(null);
-        Item item = itemRepository.findById(itemId).orElseThrow(() ->
-                new ObjectNotFoundException(String.format("Вещь с id = %d не найдена", itemId)));
+        User user = userService.getById(userId);
+        Item item = getById(itemId);
         if (!Objects.equals(item.getOwner(), user)) {
             throw new ObjectNotFoundException(String.format("Пользователь с id = %d не найден", userId));
         }
-        if (itemDto.getName() != null) {
+        if (itemDto.getName() != null && !itemDto.getName().isBlank()) {
             item.setName(itemDto.getName());
         }
-        if (itemDto.getDescription() != null) {
+        if (itemDto.getDescription() != null && !itemDto.getDescription().isBlank()) {
             item.setDescription(itemDto.getDescription());
         }
         if (itemDto.getAvailable() != null) {
@@ -122,15 +134,13 @@ public class ItemServiceImpl implements ItemService {
 
     @Transactional
     @Override
-    public CommentDto createComment(Long userId, Long itemId, CommentCreateDto commentCreateDto) {
-        User user = userRepository.findById(userId).orElseThrow(() ->
-                new ObjectNotFoundException(String.format("Пользователь с id = %d не найден", userId)));
-        Item item = itemRepository.findById(itemId).orElseThrow(() ->
-                new ObjectNotFoundException(String.format("Вещь с id = %d не найдена", itemId)));
+    public CommentDto createComment(Long userId, Long itemId, CommentDto commentDto) {
+        User user = userService.getById(userId);
+        Item item = getById(itemId);
         List<Booking> bookings = bookingRepository.findBookingByItem_IdAndStatusOrderByEndAsc(itemId,
                 BookingStatus.APPROVED);
         Comment comment = Comment.builder()
-                .text(commentCreateDto.getText())
+                .text(commentDto.getText())
                 .item(item)
                 .author(user)
                 .created(LocalDateTime.now())
@@ -139,9 +149,15 @@ public class ItemServiceImpl implements ItemService {
             throw new ValidationException("Вы можете добавить комментарий только после завершения бронирования.");
         }
         if (bookings.stream().noneMatch(s -> Objects.equals(s.getBooker(), user))) {
-            throw new ValidationException("Вы можете добавить комментарий только после оформления бронирования");
+            throw new ValidationException("Вы можете добавить комментарий только после оформления бронирования.");
         }
         return CommentMapper.toCommentDto(commentRepository.save(comment));
+    }
+
+    @Override
+    public Item getById(Long itemId) {
+        return itemRepository.findById(itemId)
+                .orElseThrow(() -> new ObjectNotFoundException(String.format("Вещь с id = %d не найдена", itemId)));
     }
 
     private void addLastAndNextBookings(ItemOwnerDto itemOwnerDto, List<Booking> bookings) {

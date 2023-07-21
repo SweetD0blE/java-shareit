@@ -46,8 +46,7 @@ class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserDto updateUser(Long userId, UserDto userDto) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new ObjectNotFoundException(String.format("Пользователь с id = %id не был найден", userId)));
+        User user = getById(userId);
         User validuser = userRepository.findByEmail(userDto.getEmail()).orElse(null);
         if (validuser != null && !Objects.equals(validuser.getId(), userId)) {
             throw new EmailAlreadyExistException("Пользователь с электронной почтой " +
@@ -60,6 +59,12 @@ class UserServiceImpl implements UserService {
             user.setEmail(userDto.getEmail());
         }
         return UserMapper.toUserDto(userRepository.save(user));
+    }
+
+    @Override
+    public User getById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new ObjectNotFoundException(String.format("Пользователь с id = %d не найден", userId)));
     }
 
     @Transactional

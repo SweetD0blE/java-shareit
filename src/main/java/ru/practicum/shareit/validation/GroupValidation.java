@@ -6,4 +6,6 @@ public interface GroupValidation {
 
     interface Create extends Default {}
 
+    interface Update extends Default {}
+
 }

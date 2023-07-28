@@ -139,42 +139,6 @@ public class ItemRequestControllerTest {
     }
 
     @Test
-    void getRequestsIfFromNegative_ReturnStatus400Test() throws Exception {
-        mockMvc.perform(get(url + "/all")
-                        .header("X-Sharer-User-Id", 1)
-                        .param("from", "-1"))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].code", is(400)))
-                .andExpect(jsonPath("$[0].error", is("must be greater than or equal to 0")));
-    }
-
-    @Test
-    void getRequestsIfSizeZero_ReturnStatus400Test() throws Exception {
-        mockMvc.perform(get(url + "/all")
-                        .header("X-Sharer-User-Id", 1)
-                        .param("size", "0"))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].code", is(400)))
-                .andExpect(jsonPath("$[0].error", is("must be greater than 0")));
-    }
-
-    @Test
-    void getRequestsIfSizeNegative_ReturnStatus400Test() throws Exception {
-        mockMvc.perform(get(url + "/all")
-                        .header("X-Sharer-User-Id", 1)
-                        .param("size", "-1"))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].code", is(400)))
-                .andExpect(jsonPath("$[0].error", is("must be greater than 0")));
-    }
-
-    @Test
     void createRequest_ReturnStatus200AndCorrectJsonTest() throws Exception {
         ItemRequestDto itemRequestDto = itemRequestDtoBuilder.build();
         ItemRequestDto outItemRequestDto = itemRequestDtoBuilder.id(1L).build();
@@ -204,22 +168,6 @@ public class ItemRequestControllerTest {
                 .andDo(print())
                 .andExpect(status().isNotFound())
                 .andExpect(content().json("{\"error\":\"Пользователь с id = 999 не был найден\"}"));
-    }
-
-    @Test
-    void createRequestIfRequestEmptyDescription_ReturnStatus400Test() throws Exception {
-        ItemRequestDto itemRequestDto = itemRequestDtoBuilder.description("").build();
-        String json = mapper.writeValueAsString(itemRequestDto);
-        mockMvc.perform(post(url)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1)
-                        .content(json))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].code", is(400)))
-                .andExpect(jsonPath("$[0].fieldName", is("description")))
-                .andExpect(jsonPath("$[0].error", is("must not be blank")));
     }
 
 }

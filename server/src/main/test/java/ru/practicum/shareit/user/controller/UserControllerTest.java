@@ -58,10 +58,10 @@ public class UserControllerTest {
                 .thenReturn(userDto);
 
         mockMvc.perform(post("/users")
-                .content(mapper.writeValueAsString(userDto))
-                .characterEncoding(StandardCharsets.UTF_8)
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON))
+                        .content(mapper.writeValueAsString(userDto))
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json(toJson(userDto)));
 

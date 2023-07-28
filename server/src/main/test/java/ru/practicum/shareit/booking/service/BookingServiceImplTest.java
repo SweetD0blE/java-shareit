@@ -20,7 +20,6 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
-import ru.practicum.shareit.validation.DateValidator;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -43,8 +42,6 @@ class BookingServiceImplTest {
     private UserService userService;
     @Mock
     private ItemService itemService;
-    @Mock
-    private DateValidator dateValidator;
     @InjectMocks
     BookingServiceImpl bookingService;
 
@@ -261,7 +258,6 @@ class BookingServiceImplTest {
         when(userService.getById(bookerId)).thenReturn(booker);
         when(itemService.getById(itemId)).thenReturn(item);
         when(bookingRepository.save(any())).thenReturn(booking);
-        when(dateValidator.isCorrectDate(any(), any())).thenReturn(true);
 
         BookingDto bookingOutDto = bookingService.createBooking(bookerId, bookingCreateDto);
 
@@ -277,24 +273,6 @@ class BookingServiceImplTest {
         when(userService.getById(bookerId)).thenReturn(booker);
         when(itemService.getById(itemId)).thenReturn(item);
         String error = String.format("Вещь с id = %d недоступна", itemId);
-
-        ValidationException ex = assertThrows(ValidationException.class,
-                () -> bookingService.createBooking(bookerId, bookingCreateDto));
-        assertEquals(error, ex.getMessage());
-    }
-
-    @Test
-    void createBookingWhenFailDateValidation_ReturnValidationExceptionTest() {
-        long bookerId = booker.getId();
-        long itemId = item.getId();
-        when(itemService.getById(itemId)).thenReturn(item);
-        when(dateValidator.isCorrectDate(any(), any())).thenReturn(false);
-        bookingCreateDto = BookingCreateDto.builder()
-                .itemId(item.getId())
-                .start(booking.getStart())
-                .end(booking.getEnd())
-                .build();
-        String error = "Неправильная дата";
 
         ValidationException ex = assertThrows(ValidationException.class,
                 () -> bookingService.createBooking(bookerId, bookingCreateDto));

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -80,11 +79,6 @@ class BookingControllerTest {
     }
 
     @Test
-    void shouldMockMvc() {
-        assertNotNull(mockMvc);
-    }
-
-    @ParameterizedTest
     void shouldGetBookingById_ReturnStatus200AndCorrectJson() throws Exception {
         BookingDto bookingDto = BookingDto.builder().build();
         String json = mapper.writeValueAsString(bookingDto);
@@ -152,19 +146,6 @@ class BookingControllerTest {
     }
 
     @Test
-    void shouldGetBookingsCurrentUserIfFromNegative_ReturnStatus400() throws Exception {
-        mockMvc.perform(get(url)
-                        .header("X-Sharer-User-Id", 1)
-                        .param("state", "WAITING")
-                        .param("from", "-1")
-                        .param("size", "10"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].code", is(400)))
-                .andExpect(jsonPath("$[0].error", is("must be greater than or equal to 0")));
-    }
-
-    @Test
     void shouldGetBookingsCurrentUserIfStateFail_ReturnStatus400() throws Exception {
         when(bookingService.getBookingsCurrentUser(1L, "FAIL", 0, 10))
                 .thenThrow(new UnsupportedStateException(String.format("Unknown state: %s", "FAIL")));
@@ -207,19 +188,6 @@ class BookingControllerTest {
     }
 
     @Test
-    void shouldGetBookingsAllItemCurrentUserIfFromNegative_ReturnStatus400() throws Exception {
-        mockMvc.perform(get(url + "/owner")
-                        .header("X-Sharer-User-Id", 1)
-                        .param("state", "WAITING")
-                        .param("from", "-1")
-                        .param("size", "10"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].code", is(400)))
-                .andExpect(jsonPath("$[0].error", is("must be greater than or equal to 0")));
-    }
-
-    @Test
     void shouldGetBookingsAllItemCurrentUserIfStateFail_ReturnStatus400() throws Exception {
         when(bookingService.getBookingsAllItemCurrentUser(1L, "FAIL", 0, 10))
                 .thenThrow(new UnsupportedStateException(String.format("Unknown state: %s", "FAIL")));
@@ -249,54 +217,6 @@ class BookingControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-    }
-
-    @Test
-    void createBookingIfItemIdNull_ReturnStatus400Test() throws Exception {
-        BookingCreateDto bookingCreateDto = bookingCreateDtoBuilder.itemId(null).build();
-        String json = mapper.writeValueAsString(bookingCreateDto);
-        mockMvc.perform(post(url)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1)
-                        .content(json))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].code", is(400)))
-                .andExpect(jsonPath("$[0].fieldName", is("itemId")))
-                .andExpect(jsonPath("$[0].error", is("must not be null")));
-    }
-
-    @Test
-    void createBookingIfStartTimeNull_ReturnStatus400Test() throws Exception {
-        BookingCreateDto bookingCreateDto = bookingCreateDtoBuilder.start(null).build();
-        String json = mapper.writeValueAsString(bookingCreateDto);
-        mockMvc.perform(post(url)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1)
-                        .content(json))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].code", is(400)))
-                .andExpect(jsonPath("$[0].fieldName", is("start")))
-                .andExpect(jsonPath("$[0].error", is("must not be null")));
-    }
-
-    @Test
-    void createBookingIfEndTimeNull_ReturnStatus400Test() throws Exception {
-        BookingCreateDto bookingCreateDto = bookingCreateDtoBuilder.end(null).build();
-        String json = mapper.writeValueAsString(bookingCreateDto);
-        mockMvc.perform(post(url)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1)
-                        .content(json))
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].code", is(400)))
-                .andExpect(jsonPath("$[0].fieldName", is("end")))
-                .andExpect(jsonPath("$[0].error", is("must not be null")));
     }
 
     @Test

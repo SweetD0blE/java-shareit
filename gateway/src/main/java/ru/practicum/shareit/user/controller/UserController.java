@@ -6,8 +6,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.UserClient;
 import ru.practicum.shareit.user.dto.UserDto;
-import ru.practicum.shareit.validation.GroupValidation.Update;
 import ru.practicum.shareit.validation.GroupValidation.Create;
+import ru.practicum.shareit.validation.GroupValidation.Update;
 
 import javax.validation.constraints.Positive;
 

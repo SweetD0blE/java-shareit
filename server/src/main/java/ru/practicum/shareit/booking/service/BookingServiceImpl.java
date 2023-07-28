@@ -20,7 +20,6 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.UserService;
-import ru.practicum.shareit.validation.DateValidator;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -36,7 +35,6 @@ public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final ItemService itemService;
     private final UserService userService;
-    private final DateValidator dateValidator;
 
     @Override
     public List<BookingDto> getBookingsCurrentUser(Long userId, String state, Integer from, Integer size) {
@@ -125,9 +123,6 @@ public class BookingServiceImpl implements BookingService {
         }
         if (!item.getAvailable()) {
             throw new ValidationException(String.format("Вещь с id = %d недоступна", item.getId()));
-        }
-        if (!dateValidator.isCorrectDate(bookingCreateDto.getStart(), bookingCreateDto.getEnd())) {
-            throw new ValidationException("Неправильная дата");
         }
         bookingCreateDto.setBookerId(user.getId());
         bookingCreateDto.setStatus(BookingStatus.WAITING);

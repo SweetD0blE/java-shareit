@@ -1,7 +1,6 @@
 package ru.practicum.shareit.booking.controller;
 
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +12,6 @@ import ru.practicum.shareit.validation.GroupValidation.Create;
 
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
-
 import java.time.LocalDateTime;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;

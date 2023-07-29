@@ -32,7 +32,7 @@ public class ErrorHandler {
 
     @ExceptionHandler(Throwable.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse handleThrowable(Exception e) {
+    public ErrorResponse handleThrowable(Throwable e) {
         log.warn(e.getMessage(), e);
         return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
@@ -44,7 +44,7 @@ public class ErrorHandler {
         return new ErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
-    @ExceptionHandler
+    @ExceptionHandler(UnsupportedStateException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleUnsupportedStateException(final UnsupportedStateException e) {
         log.error(e.getMessage(), e);

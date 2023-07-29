@@ -18,14 +18,14 @@ public class ErrorHandler {
 
     @ExceptionHandler(EmailAlreadyExistException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handleEmailAlreadyExistException(Exception e) {
+    public ErrorResponse handleEmailAlreadyExistException(EmailAlreadyExistException e) {
         log.error(e.getMessage(), e);
         return new ErrorResponse(HttpStatus.CONFLICT, e.getMessage());
     }
 
     @ExceptionHandler(ObjectNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleObjectNotFoundException(Exception e) {
+    public ErrorResponse handleObjectNotFoundException(ObjectNotFoundException e) {
         log.error(e.getMessage(), e);
         return new ErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
     }
@@ -39,7 +39,7 @@ public class ErrorHandler {
 
     @ExceptionHandler(ValidationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleValidationException(Exception e) {
+    public ErrorResponse handleValidationException(ValidationException e) {
         log.error(e.getMessage(), e);
         return new ErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
     }
